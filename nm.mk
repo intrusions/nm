@@ -24,5 +24,6 @@ CFLAGS_DBG :=                       \
     -fno-optimize-sibling-calls 
 
 SRCS :=                                 \
+    debug/print_flag.c                  \
     core/nm.c                           \
     flag/manage_flag.c                  
