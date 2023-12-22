@@ -6,12 +6,12 @@
 /*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 23:40:20 by xel               #+#    #+#             */
-/*   Updated: 2023/12/22 17:43:39 by xel              ###   ########.fr       */
+/*   Updated: 2023/12/22 18:12:18 by xel              ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef FLAG_H
-# define FLAG_H
+#ifndef NM_H
+# define NM_H
 
 // ========================================================================= //
 //                                   Header                                  //
@@ -44,6 +44,6 @@ typedef int64_t i64;
 // ========================================================================= //
 
 bool manage_flag(int argc, char **argv, u64 *flags);
-void nm(char *file_name);
+void nm(char *file_name, const u64 flags);
 
 #endif
