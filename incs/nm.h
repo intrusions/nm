@@ -6,7 +6,7 @@
 /*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 23:40:20 by xel               #+#    #+#             */
-/*   Updated: 2024/01/02 01:02:52 by xel              ###   ########.fr       */
+/*   Updated: 2024/01/02 05:08:07 by xel              ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -17,12 +17,17 @@
 //                                   Header                                  //
 // ========================================================================= //
 
+#include <unistd.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <elf.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/mman.h>
 
 
 // ========================================================================= //
