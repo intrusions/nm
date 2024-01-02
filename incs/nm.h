@@ -6,7 +6,7 @@
 /*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 23:40:20 by xel               #+#    #+#             */
-/*   Updated: 2023/12/22 18:12:18 by xel              ###   ########.fr       */
+/*   Updated: 2024/01/02 01:02:52 by xel              ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <elf.h>
 
 
 // ========================================================================= //
@@ -43,7 +44,7 @@ typedef int64_t i64;
 //                                  Prototype                                //
 // ========================================================================= //
 
-bool manage_flag(int argc, char **argv, u64 *flags);
+bool manage_flag(int ac, char **av, u64 *flags);
 void nm(char *file_name, const u64 flags);
 
 #endif

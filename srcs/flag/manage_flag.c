@@ -6,14 +6,12 @@
 /*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 23:32:41 by xel               #+#    #+#             */
-/*   Updated: 2023/12/22 17:56:11 by xel              ###   ########.fr       */
+/*   Updated: 2023/12/22 21:49:56 by xel              ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
 #include "nm.h"
 #include "flag.h"
-
-#define N_FLAGS 5
 
 static void print_man() {
     
@@ -91,13 +89,13 @@ static bool is_valid_option_flag(const char *option, char *invalid_flag, u64 *fl
     return true; 
 }
 
-bool manage_flag(int argc, char **argv, u64 *flags) {
+bool manage_flag(int ac, char **av, u64 *flags) {
 
-    int     n_param = argc - 1;
-    char    **options = argv + 1;
+    int     n_param = ac - 1;
+    char    **options = av + 1;
     char    invalid_flag;
 
-    if (argv[argc - 1][0] != '-') {
+    if (av[ac - 1][0] != '-') {
         n_param--;
     }
 
