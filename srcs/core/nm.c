@@ -6,7 +6,7 @@
 /*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 01:39:38 by xel               #+#    #+#             */
-/*   Updated: 2024/01/02 07:02:07 by xel              ###   ########.fr       */
+/*   Updated: 2024/01/04 04:33:15 by xel              ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -18,9 +18,11 @@ void    handle_64(Elf64_Ehdr *elf_header, char *base_address) {
     
     Elf64_Shdr *section_header = (Elf64_Shdr *)(base_address + elf_header->e_shoff);
     Elf64_Shdr *symtab_header = NULL;
+    Elf64_Sym *symtab = NULL;
     char *strtab = NULL;
+    u16 num_symbols = 0;
 
-    for (int i = 0; i < elf_header->e_shnum; ++i) {
+    for (u16 i = 0; i < elf_header->e_shnum; ++i) {
         if (section_header[i].sh_type == SHT_SYMTAB) {
             symtab_header = &section_header[i];
             break;
@@ -31,11 +33,11 @@ void    handle_64(Elf64_Ehdr *elf_header, char *base_address) {
         return;
     }
 
-    strtab = base_address + section_header[symtab_header->sh_link].sh_offset;
-    Elf64_Sym *symtab = (Elf64_Sym *)(base_address + symtab_header->sh_offset);
-    
-    int num_symbols = symtab_header->sh_size / sizeof(Elf64_Sym);
-    for (int i = 0; i < num_symbols; ++i) {
+    strtab = (char *)base_address + section_header[symtab_header->sh_link].sh_offset;
+    symtab = (Elf64_Sym *)(base_address + symtab_header->sh_offset);
+    num_symbols = symtab_header->sh_size / sizeof(Elf64_Sym);
+
+    for (u16 i = 0; i < num_symbols; ++i) {
         printf("%s\n", strtab + symtab[i].st_name);
     }
 }
@@ -45,7 +47,7 @@ void nm(char *file_name, const u64 flags) {
 
     int         fd;
     struct stat file_stat;
-    char        *file_data;
+    char        *binary_dump;
 
     if ((fd = open(file_name, O_RDONLY)) < 0) {
         perror("nm: open");
@@ -55,16 +57,16 @@ void nm(char *file_name, const u64 flags) {
         perror("nm: fstat");
         return ; 
     }
-    if ((file_data = mmap(0, file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+    if ((binary_dump = mmap(0, file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
         perror("nm: mmap");
         close(fd);
         return ; 
     }
     
-    Elf64_Ehdr *elf_header = (Elf64_Ehdr *)file_data;
+    Elf64_Ehdr *elf_header = (Elf64_Ehdr *)binary_dump;
     if (memcmp(elf_header->e_ident, ELFMAG, SELFMAG) != 0) {
-        printf("not an ELF file\n");
-        munmap(file_data, file_stat.st_size);
+        printf("nm: not an elf file\n");
+        munmap(binary_dump, file_stat.st_size);
         close(fd);
         return;
     }
@@ -72,9 +74,9 @@ void nm(char *file_name, const u64 flags) {
     if (elf_header->e_ident[EI_CLASS] == ELFCLASS32) {
         // handle_32();
     } else if (elf_header->e_ident[EI_CLASS] == ELFCLASS64) {
-        handle_64(elf_header, file_data);
+        handle_64(elf_header, binary_dump);
     }
     
-    munmap(elf_header, sizeof(Elf64_Ehdr));
+    munmap(binary_dump, file_stat.st_size);
     close(fd);
 }
