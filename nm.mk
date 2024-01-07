@@ -26,4 +26,5 @@ CFLAGS_DBG :=                       \
 SRCS :=                                 \
     debug/print_flag.c                  \
     core/nm.c                           \
+    core/handle_64.c                    \
     flag/manage_flag.c                  

@@ -6,7 +6,7 @@
 /*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 01:39:38 by xel               #+#    #+#             */
-/*   Updated: 2024/01/04 04:33:15 by xel              ###   ########.fr       */
+/*   Updated: 2024/01/07 06:53:58 by xel              ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -14,36 +14,9 @@
 #include "flag.h"
 #include "debug.h"
 
-void    handle_64(Elf64_Ehdr *elf_header, char *base_address) {
-    
-    Elf64_Shdr *section_header = (Elf64_Shdr *)(base_address + elf_header->e_shoff);
-    Elf64_Shdr *symtab_header = NULL;
-    Elf64_Sym *symtab = NULL;
-    char *strtab = NULL;
-    u16 num_symbols = 0;
-
-    for (u16 i = 0; i < elf_header->e_shnum; ++i) {
-        if (section_header[i].sh_type == SHT_SYMTAB) {
-            symtab_header = &section_header[i];
-            break;
-        }
-    }
-    if (!symtab_header) {
-        printf("no symbol table found\n");
-        return;
-    }
-
-    strtab = (char *)base_address + section_header[symtab_header->sh_link].sh_offset;
-    symtab = (Elf64_Sym *)(base_address + symtab_header->sh_offset);
-    num_symbols = symtab_header->sh_size / sizeof(Elf64_Sym);
-
-    for (u16 i = 0; i < num_symbols; ++i) {
-        printf("%s\n", strtab + symtab[i].st_name);
-    }
-}
-
 void nm(char *file_name, const u64 flags) {
-    __DEBUG_PRINT_FLAGS(flags, file_name);
+    // __DEBUG_PRINT_FLAGS(flags, file_name);
+    (void)flags;
 
     int         fd;
     struct stat file_stat;
@@ -74,7 +47,7 @@ void nm(char *file_name, const u64 flags) {
     if (elf_header->e_ident[EI_CLASS] == ELFCLASS32) {
         // handle_32();
     } else if (elf_header->e_ident[EI_CLASS] == ELFCLASS64) {
-        handle_64(elf_header, binary_dump);
+        handle_64(elf_header, binary_dump, flags);
     }
     
     munmap(binary_dump, file_stat.st_size);
