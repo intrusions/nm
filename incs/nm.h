@@ -6,7 +6,7 @@
 /*   By: jucheval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 23:40:20 by xel               #+#    #+#             */
-/*   Updated: 2024/01/19 13:46:22 by jucheval         ###   ########.fr       */
+/*   Updated: 2024/01/24 13:56:58 by jucheval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,23 @@ typedef int64_t i64;
 
 
 // ========================================================================= //
+//                                  Structure                                //
+// ========================================================================= //
+
+typedef struct s_sym_list {
+    u64     sym_value;
+    char    sym_type;
+    char    *sym_name;
+    bool    is_undef;
+}   t_sym_list;
+
+// ========================================================================= //
 //                                  Prototype                                //
 // ========================================================================= //
 
 bool manage_flag(int ac, char **av, u64 *flags);
 void nm(char *file_name, const u64 flags);
 void handle_64(Elf64_Ehdr *elf_header, char *base_address, u64 flags);
+void free_sym_list(t_sym_list **sym_list, u16 n_sym);
 
 #endif

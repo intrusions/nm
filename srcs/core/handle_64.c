@@ -6,7 +6,7 @@
 /*   By: jucheval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/07 06:46:29 by xel               #+#    #+#             */
-/*   Updated: 2024/01/19 14:34:54 by jucheval         ###   ########.fr       */
+/*   Updated: 2024/01/24 13:56:36 by jucheval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "flag.h"
 #include "debug.h"
 
-char    get_symtype_64(Elf64_Ehdr *elf_header, Elf64_Sym *sym) {
+static char    get_symtype_64(Elf64_Ehdr *elf_header, Elf64_Sym *sym) {
     
     const i32   bind = ELF64_ST_BIND(sym->st_info);
     const i32   type = ELF64_ST_TYPE(sym->st_info);
@@ -61,9 +61,9 @@ char    get_symtype_64(Elf64_Ehdr *elf_header, Elf64_Sym *sym) {
                                 + shstrtb->sh_offset
                                 + shdr->sh_name);
 
-    if (!strcmp(section_name, ".text") 
+    if (!strcmp(section_name, ".text")
             || !strcmp(section_name, ".fini")
-            || !strcmp(section_name, ".init")) 
+            || !strcmp(section_name, ".init"))
         st = 'T';
     else if (!strcmp(section_name, "completed.0")
             || !strcmp(section_name, ".bss")
@@ -92,27 +92,48 @@ char    get_symtype_64(Elf64_Ehdr *elf_header, Elf64_Sym *sym) {
     return (st);
 }
 
-void    print_line(Elf64_Ehdr *elf_header, char *strtab, Elf64_Sym *symtab, u64 flags) {
-    (void)flags;
+static void    print_sym_list_64(t_sym_list **sym_list, u16 n_sym) {
+    
+    for (u16 i = 0; i < n_sym - 1; i++) {
+        if (sym_list[i]->is_undef == true)
+            (void)printf("                ");
+        else
+            (void)printf("%016lx", (u64)sym_list[i]->sym_value);
+        
+        (void)printf(" %c ", sym_list[i]->sym_type);
+        (void)printf("%s\n", sym_list[i]->sym_name);
+    }
+}
+
+static t_sym_list    *fill_sym_struct_64(Elf64_Ehdr *elf_header, char *strtab, Elf64_Sym *symtab) {
+
+    t_sym_list  *sym = malloc(sizeof(t_sym_list));
+    if (!sym)
+        return NULL;
+    (void)memset(sym, 0, sizeof(t_sym_list));
 
     if (symtab->st_shndx == SHN_UNDEF)
-        printf("                ");
+        sym->is_undef = true;
     else
-        printf("%016lx", (u64)symtab->st_value);
+        sym->sym_value = (u64)symtab->st_value;
 
-    printf(" %c ", get_symtype_64(elf_header, symtab));
+    sym->sym_type = get_symtype_64(elf_header, symtab);
+    sym->sym_name = strtab + symtab->st_name;
 
-    printf("%s\n", strtab + symtab->st_name);
+    return (sym);
 }
 
 
 void    handle_64(Elf64_Ehdr *elf_header, char *base_address, u64 flags) {
+    (void)flags;
     
-    Elf64_Shdr *section_header = (Elf64_Shdr *)(base_address + elf_header->e_shoff);
-    Elf64_Shdr *symtab_header = NULL;
-    Elf64_Sym *symtab = NULL;
-    char *strtab = NULL;
-    u16 num_symbols = 0;
+    Elf64_Shdr  *section_header = (Elf64_Shdr *)(base_address + elf_header->e_shoff);
+    Elf64_Shdr  *symtab_header = NULL;
+    Elf64_Sym   *symtab = NULL;
+    char        *strtab = NULL;
+    t_sym_list  **sym_list = NULL;
+    u16          num_symbols = 0;
+    
 
     for (u16 i = 0; i < elf_header->e_shnum; ++i) {
         if (section_header[i].sh_type == SHT_SYMTAB) {
@@ -121,7 +142,7 @@ void    handle_64(Elf64_Ehdr *elf_header, char *base_address, u64 flags) {
         }
     }
     if (!symtab_header) {
-        printf("no symbol table found\n");
+        (void)printf("no symbol table found\n");
         return;
     }
 
@@ -129,7 +150,14 @@ void    handle_64(Elf64_Ehdr *elf_header, char *base_address, u64 flags) {
     symtab = (Elf64_Sym *)(base_address + symtab_header->sh_offset);
     num_symbols = symtab_header->sh_size / sizeof(Elf64_Sym);
 
+    sym_list = malloc(num_symbols * sizeof(t_sym_list *));
+    if (!sym_list)
+        return ;
+
     for (u16 i = 1; i < num_symbols; i++) {
-        (void)print_line(elf_header, strtab, &symtab[i], flags);
+        sym_list[i - 1] = fill_sym_struct_64(elf_header, strtab, &symtab[i]);
     }
+    
+    (void)print_sym_list_64(sym_list, num_symbols);
+    free_sym_list(sym_list, num_symbols);
 }
