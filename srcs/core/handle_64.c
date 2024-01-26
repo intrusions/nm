@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   handle_64.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: jucheval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/07 06:46:29 by xel               #+#    #+#             */
-/*   Updated: 2024/01/26 11:39:42 by xel              ###   ########.fr       */
+/*   Updated: 2024/01/26 14:29:08 by jucheval         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "nm.h"
 #include "flag.h"
@@ -127,25 +127,29 @@ static t_sym_list    *fill_sym_struct_64(Elf64_Ehdr *elf_header, char *strtab, E
     return (sym);
 }
 
-static void mask_internal_sym(t_sym_list **sym_list, u16 num_symbols) {
-    
-    for (u16 i = 0; i < num_symbols - 1; i++) {
-        
-        if (sym_list[i]->sym_type < 65
-            && sym_list[i]->sym_type > 90)
-        sym_list[i]->is_masked = true;
-    }
+static void ascii_sort(t_sym_list **sym_list, u16 num_symbols) {
+    (void)sym_list;
+    (void)num_symbols;
 }
 
-static void apply_flags_sym_list_64(t_sym_list **sym_list, u16 num_symbols, u64 flags) {
-    (void)sym_list;
-    (void)flags;
+static void applies_flags_sym_list_64(t_sym_list **sym_list, u16 num_symbols, u64 flags) {
+
+    (void)mask_absolute_value_sym(sym_list, num_symbols);
     
+    if (!(flags & FLAG_P)) {
+        (void)ascii_sort(sym_list, num_symbols);
+    }
     if (flags & FLAG_A) {
-        
+        (void)unmask_absolute_value_sym(sym_list, num_symbols);
     }
     if (flags & FLAG_G) {
         (void)mask_internal_sym(sym_list, num_symbols);
+    }
+    if (flags & FLAG_U) {
+        (void)mask_undef_sym(sym_list, num_symbols);
+    }
+    if (flags & FLAG_R) {
+        (void)reverse_sort_sym(sym_list, num_symbols);    
     }
 }
 
@@ -181,8 +185,8 @@ void handle_64(Elf64_Ehdr *elf_header, char *base_address, u64 flags) {
     for (u16 i = 1; i < num_symbols; i++) {
         sym_list[i - 1] = fill_sym_struct_64(elf_header, strtab, &symtab[i]);
     }
-    
-    (void)apply_flags_sym_list_64(sym_list, num_symbols, flags);
+
+    (void)applies_flags_sym_list_64(sym_list, num_symbols, flags);
     (void)print_sym_list_64(sym_list, num_symbols);
     (void)free_sym_list(sym_list, num_symbols);
 }
