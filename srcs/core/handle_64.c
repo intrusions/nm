@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   handle_64.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jucheval <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/07 06:46:29 by xel               #+#    #+#             */
-/*   Updated: 2024/01/24 13:56:36 by jucheval         ###   ########.fr       */
+/*   Updated: 2024/01/26 11:16:29 by xel              ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "nm.h"
 #include "flag.h"
@@ -123,9 +123,14 @@ static t_sym_list    *fill_sym_struct_64(Elf64_Ehdr *elf_header, char *strtab, E
     return (sym);
 }
 
-
-void    handle_64(Elf64_Ehdr *elf_header, char *base_address, u64 flags) {
+static void apply_flags_sym_list_64(t_sym_list **sym_list, u64 flags) {
+    (void)sym_list;
     (void)flags;
+    
+    // define order priority of flags
+}
+
+void handle_64(Elf64_Ehdr *elf_header, char *base_address, u64 flags) {
     
     Elf64_Shdr  *section_header = (Elf64_Shdr *)(base_address + elf_header->e_shoff);
     Elf64_Shdr  *symtab_header = NULL;
@@ -158,6 +163,7 @@ void    handle_64(Elf64_Ehdr *elf_header, char *base_address, u64 flags) {
         sym_list[i - 1] = fill_sym_struct_64(elf_header, strtab, &symtab[i]);
     }
     
+    (void)apply_flags_sym_list_64(sym_list, flags);
     (void)print_sym_list_64(sym_list, num_symbols);
-    free_sym_list(sym_list, num_symbols);
+    (void)free_sym_list(sym_list, num_symbols);
 }
