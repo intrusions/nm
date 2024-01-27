@@ -1,22 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_sym_list.c                                    :+:      :+:    :+:   */
+/*   swap_sym.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jucheval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/24 13:51:47 by jucheval          #+#    #+#             */
-/*   Updated: 2024/01/27 01:17:36 by jucheval         ###   ########.fr       */
+/*   Created: 2024/01/27 01:13:43 by jucheval          #+#    #+#             */
+/*   Updated: 2024/01/27 01:17:40 by jucheval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm.h"
 
 void
-free_sym_list(t_sym_list **sym_list, u16 n_sym) {
-
-    for (u16 i = 0; i < n_sym - 1; i++) {
-        free(sym_list[i]);
-    }
-    free(sym_list);
+swap_sym(t_sym_list **a, t_sym_list **b) {
+    
+    t_sym_list *temp = *a;
+    *a = *b;
+    *b = temp;
 }

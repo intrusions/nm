@@ -1,19 +1,20 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   manage_flag.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: jucheval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 23:32:41 by xel               #+#    #+#             */
-/*   Updated: 2023/12/22 21:49:56 by xel              ###   ########.fr       */
+/*   Updated: 2024/01/27 01:17:27 by jucheval         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "nm.h"
 #include "flag.h"
 
-static void print_man() {
+static void
+print_man() {
     
     printf(
         "Usage: nm [options(s)] [file(s)]\n"
@@ -27,7 +28,8 @@ static void print_man() {
     );
 }
 
-static u64 what_option_bit(const char *options) {
+static u64
+what_option_bit(const char *options) {
     
     if (!strcmp(options, "--debug-syms"))       { return FLAG_A; }
     if (!strcmp(options, "--extern-only"))      { return FLAG_G; }
@@ -37,7 +39,8 @@ static u64 what_option_bit(const char *options) {
     return 0;
 }
 
-static u64 what_flag_bit(const char flag) {
+static u64
+what_flag_bit(const char flag) {
     
     if (flag == 'a')     { return FLAG_A; }
     if (flag == 'g')     { return FLAG_G; }
@@ -47,7 +50,8 @@ static u64 what_flag_bit(const char flag) {
     return 0;
 }
 
-static bool is_valid_option(const char *option, u64 *flags) {
+static bool
+is_valid_option(const char *option, u64 *flags) {
     
     const char *valid_options[N_FLAGS] = {
         "--debug-syms",
@@ -66,7 +70,8 @@ static bool is_valid_option(const char *option, u64 *flags) {
     return false;
 }
 
-static bool is_valid_option_flag(const char *option, char *invalid_flag, u64 *flags) {
+static bool
+is_valid_option_flag(const char *option, char *invalid_flag, u64 *flags) {
     
     const char *valid_flags = "agpur";
 
@@ -89,7 +94,8 @@ static bool is_valid_option_flag(const char *option, char *invalid_flag, u64 *fl
     return true; 
 }
 
-bool manage_flag(int ac, char **av, u64 *flags) {
+bool
+manage_flag(int ac, char **av, u64 *flags) {
 
     int     n_param = ac - 1;
     char    **options = av + 1;

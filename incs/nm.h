@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   nm.h                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: jucheval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 23:40:20 by xel               #+#    #+#             */
-/*   Updated: 2024/01/26 11:30:17 by xel              ###   ########.fr       */
+/*   Updated: 2024/01/27 01:15:06 by jucheval         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #ifndef NM_H
 # define NM_H
@@ -65,5 +65,6 @@ bool manage_flag(int ac, char **av, u64 *flags);
 void nm(char *file_name, const u64 flags);
 void handle_64(Elf64_Ehdr *elf_header, char *base_address, u64 flags);
 void free_sym_list(t_sym_list **sym_list, u16 n_sym);
+void swap_sym(t_sym_list **a, t_sym_list **b);
 
 #endif

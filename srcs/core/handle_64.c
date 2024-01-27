@@ -6,7 +6,7 @@
 /*   By: jucheval <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/07 06:46:29 by xel               #+#    #+#             */
-/*   Updated: 2024/01/26 14:29:08 by jucheval         ###   ########.fr       */
+/*   Updated: 2024/01/27 01:16:22 by jucheval         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #include "flag.h"
 #include "debug.h"
 
-static char    get_symtype_64(Elf64_Ehdr *elf_header, Elf64_Sym *sym) {
+static char
+get_symtype_64(Elf64_Ehdr *elf_header, Elf64_Sym *sym) {
     
     const i32   bind = ELF64_ST_BIND(sym->st_info);
     const i32   type = ELF64_ST_TYPE(sym->st_info);
@@ -92,7 +93,8 @@ static char    get_symtype_64(Elf64_Ehdr *elf_header, Elf64_Sym *sym) {
     return (st);
 }
 
-static void    print_sym_list_64(t_sym_list **sym_list, u16 n_sym) {
+static void
+print_sym_list_64(t_sym_list **sym_list, u16 n_sym) {
     
     for (u16 i = 0; i < n_sym - 1; i++) {
         
@@ -109,7 +111,8 @@ static void    print_sym_list_64(t_sym_list **sym_list, u16 n_sym) {
     }
 }
 
-static t_sym_list    *fill_sym_struct_64(Elf64_Ehdr *elf_header, char *strtab, Elf64_Sym *symtab) {
+static t_sym_list*
+fill_sym_struct_64(Elf64_Ehdr *elf_header, char *strtab, Elf64_Sym *symtab) {
 
     t_sym_list  *sym = malloc(sizeof(t_sym_list));
     if (!sym)
@@ -127,12 +130,26 @@ static t_sym_list    *fill_sym_struct_64(Elf64_Ehdr *elf_header, char *strtab, E
     return (sym);
 }
 
-static void ascii_sort(t_sym_list **sym_list, u16 num_symbols) {
-    (void)sym_list;
-    (void)num_symbols;
+static void
+ascii_sort(t_sym_list **sym_list, u16 num_symbols) {
+    
+    for (u16 i = 0; i < num_symbols - 1; ++i) {
+        
+        u16 min_index = i;
+        for (u16 j = i + 1; j < num_symbols - 1; ++j) {
+            
+            if (strcmp(sym_list[j]->sym_name, sym_list[min_index]->sym_name) < 0) {
+                min_index = j;
+            }
+        }
+        if (min_index != i) {
+            swap_sym(&sym_list[i], &sym_list[min_index]);
+        }
+    }
 }
 
-static void applies_flags_sym_list_64(t_sym_list **sym_list, u16 num_symbols, u64 flags) {
+static void
+applies_flags_sym_list_64(t_sym_list **sym_list, u16 num_symbols, u64 flags) {
 
     (void)mask_absolute_value_sym(sym_list, num_symbols);
     
@@ -153,7 +170,8 @@ static void applies_flags_sym_list_64(t_sym_list **sym_list, u16 num_symbols, u6
     }
 }
 
-void handle_64(Elf64_Ehdr *elf_header, char *base_address, u64 flags) {
+void
+handle_64(Elf64_Ehdr *elf_header, char *base_address, u64 flags) {
     
     Elf64_Shdr  *section_header = (Elf64_Shdr *)(base_address + elf_header->e_shoff);
     Elf64_Shdr  *symtab_header = NULL;
@@ -161,17 +179,16 @@ void handle_64(Elf64_Ehdr *elf_header, char *base_address, u64 flags) {
     char        *strtab = NULL;
     t_sym_list  **sym_list = NULL;
     u16          num_symbols = 0;
-    
 
     for (u16 i = 0; i < elf_header->e_shnum; ++i) {
         if (section_header[i].sh_type == SHT_SYMTAB) {
             symtab_header = &section_header[i];
-            break;
+            break ;
         }
     }
     if (!symtab_header) {
         (void)printf("no symbol table found\n");
-        return;
+        return ;
     }
 
     strtab = (char *)base_address + section_header[symtab_header->sh_link].sh_offset;

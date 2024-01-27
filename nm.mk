@@ -29,4 +29,5 @@ SRCS :=                                 \
     core/handle_64.c                    \
     flag/manage_flag.c                  \
     flag/applies_flag.c                 \
-    utils/free_sym_list.c                  
+    utils/free_sym_list.c               \
+    utils/swap_sym.c                    
