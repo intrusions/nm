@@ -27,6 +27,8 @@ SRCS :=                                 \
     debug/print_flag.c                  \
     core/nm.c                           \
     core/handle_64.c                    \
+    core/handle_32.c                    \
+    core/ascii_sort.c                   \
     flag/manage_flag.c                  \
     flag/applies_flag.c                 \
     utils/free_sym_list.c               \

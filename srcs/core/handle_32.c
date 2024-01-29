@@ -1,12 +1,12 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   handle_64.c                                        :+:      :+:    :+:   */
+/*   handle_32.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/07 06:46:29 by xel               #+#    #+#             */
-/*   Updated: 2024/01/29 09:09:36 by xel              ###   ########.fr       */
+/*   Updated: 2024/01/29 09:12:51 by xel              ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -15,10 +15,10 @@
 #include "debug.h"
 
 static char
-get_symtype_64(const Elf64_Ehdr *elf_header, const Elf64_Sym *sym) {
+get_symtype_32(const Elf32_Ehdr *elf_header, const Elf32_Sym *sym) {
     
-    const i32   bind = ELF64_ST_BIND(sym->st_info);
-    const i32   type = ELF64_ST_TYPE(sym->st_info);
+    const i32   bind = ELF32_ST_BIND(sym->st_info);
+    const i32   type = ELF32_ST_TYPE(sym->st_info);
     char        st;
 
     if (type == STT_FILE)
@@ -45,13 +45,13 @@ get_symtype_64(const Elf64_Ehdr *elf_header, const Elf64_Sym *sym) {
         return 'U';
     
 
-    const Elf64_Shdr *shdr =    (Elf64_Shdr *)
+    const Elf32_Shdr *shdr =    (Elf32_Shdr *)
                                 ((char *)elf_header
                                 + elf_header->e_shoff 
                                 + sym->st_shndx 
                                 * elf_header->e_shentsize);
 
-    const Elf64_Shdr *shstrtb = (Elf64_Shdr *)
+    const Elf32_Shdr *shstrtb = (Elf32_Shdr *)
                                 ((char *)elf_header
                                 + elf_header->e_shoff
                                 + elf_header->e_shstrndx
@@ -94,7 +94,7 @@ get_symtype_64(const Elf64_Ehdr *elf_header, const Elf64_Sym *sym) {
 }
 
 static void
-print_sym_list_64(t_sym_list **sym_list, const u16 n_sym) {
+print_sym_list_32(t_sym_list **sym_list, const u16 n_sym) {
     
     for (u16 i = 0; i < n_sym - 1; i++) {
         
@@ -102,9 +102,9 @@ print_sym_list_64(t_sym_list **sym_list, const u16 n_sym) {
             continue ;
         
         if (sym_list[i]->is_undef == true)
-            (void)printf("                ");
+            (void)printf("        ");
         else
-            (void)printf("%016lx", (u64)sym_list[i]->sym_value);
+            (void)printf("%08lx", (u64)sym_list[i]->sym_value);
         
         (void)printf(" %c ", sym_list[i]->sym_type);
         (void)printf("%s\n", sym_list[i]->sym_name);
@@ -112,7 +112,7 @@ print_sym_list_64(t_sym_list **sym_list, const u16 n_sym) {
 }
 
 static t_sym_list*
-fill_sym_struct_64(const Elf64_Ehdr *elf_header, char *strtab, const Elf64_Sym *symtab) {
+fill_sym_struct_32(const Elf32_Ehdr *elf_header, char *strtab, const Elf32_Sym *symtab) {
 
     t_sym_list  *sym = malloc(sizeof(t_sym_list));
     if (!sym)
@@ -124,18 +124,18 @@ fill_sym_struct_64(const Elf64_Ehdr *elf_header, char *strtab, const Elf64_Sym *
     else
         sym->sym_value = (u64)symtab->st_value;
 
-    sym->sym_type = get_symtype_64(elf_header, symtab);
+    sym->sym_type = get_symtype_32(elf_header, symtab);
     sym->sym_name = strtab + symtab->st_name;
 
     return (sym);
 }
 
 void
-handle_64(const Elf64_Ehdr *elf_header, const char *base_address, const u64 flags) {
+handle_32(const Elf32_Ehdr *elf_header, const char *base_address, const u64 flags) {
     
-    Elf64_Shdr  *section_header = (Elf64_Shdr *)(base_address + elf_header->e_shoff);
-    Elf64_Shdr  *symtab_header = NULL;
-    Elf64_Sym   *symtab = NULL;
+    Elf32_Shdr  *section_header = (Elf32_Shdr *)(base_address + elf_header->e_shoff);
+    Elf32_Shdr  *symtab_header = NULL;
+    Elf32_Sym   *symtab = NULL;
     char        *strtab = NULL;
     t_sym_list  **sym_list = NULL;
     u16          n_sym = 0;
@@ -152,18 +152,18 @@ handle_64(const Elf64_Ehdr *elf_header, const char *base_address, const u64 flag
     }
 
     strtab = (char *)base_address + section_header[symtab_header->sh_link].sh_offset;
-    symtab = (Elf64_Sym *)(base_address + symtab_header->sh_offset);
-    n_sym = symtab_header->sh_size / sizeof(Elf64_Sym);
+    symtab = (Elf32_Sym *)(base_address + symtab_header->sh_offset);
+    n_sym = symtab_header->sh_size / sizeof(Elf32_Sym);
 
     sym_list = malloc(n_sym * sizeof(t_sym_list *));
     if (!sym_list)
         return ;
 
     for (u16 i = 1; i < n_sym; i++) {
-        sym_list[i - 1] = fill_sym_struct_64(elf_header, strtab, &symtab[i]);
+        sym_list[i - 1] = fill_sym_struct_32(elf_header, strtab, &symtab[i]);
     }
 
     (void)applies_flags_sym_list(sym_list, n_sym, flags);
-    (void)print_sym_list_64(sym_list, n_sym);
+    (void)print_sym_list_32(sym_list, n_sym);
     (void)free_sym_list(sym_list, n_sym);
 }

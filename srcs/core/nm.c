@@ -1,23 +1,22 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   nm.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jucheval <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/22 01:39:38 by xel               #+#    #+#             */
-/*   Updated: 2024/01/27 01:16:31 by jucheval         ###   ########.fr       */
+/*   Updated: 2024/01/29 09:14:52 by xel              ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "nm.h"
 #include "flag.h"
 #include "debug.h"
 
 void
-nm(char *file_name, const u64 flags) {
+nm(const char *file_name, const u64 flags) {
     // __DEBUG_PRINT_FLAGS(flags, file_name);
-    (void)flags;
 
     int         fd;
     struct stat file_stat;
@@ -46,7 +45,7 @@ nm(char *file_name, const u64 flags) {
     }
 
     if (elf_header->e_ident[EI_CLASS] == ELFCLASS32) {
-        // handle_32();
+        handle_32((Elf32_Ehdr *)elf_header, binary_dump, flags);
     } else if (elf_header->e_ident[EI_CLASS] == ELFCLASS64) {
         handle_64(elf_header, binary_dump, flags);
     }

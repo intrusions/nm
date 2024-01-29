@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   nm.h                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jucheval <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/21 23:40:20 by xel               #+#    #+#             */
-/*   Updated: 2024/01/27 01:15:06 by jucheval         ###   ########.fr       */
+/*   Updated: 2024/01/29 09:14:56 by xel              ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #ifndef NM_H
 # define NM_H
@@ -61,10 +61,16 @@ typedef struct s_sym_list {
 //                                  Prototype                                //
 // ========================================================================= //
 
+void nm(const char *file_name, const u64 flags);
+void handle_32(const Elf32_Ehdr *elf_header, const char *base_address, const u64 flags);
+void handle_64(const Elf64_Ehdr *elf_header, const char *base_address, const u64 flags);
+
 bool manage_flag(int ac, char **av, u64 *flags);
-void nm(char *file_name, const u64 flags);
-void handle_64(Elf64_Ehdr *elf_header, char *base_address, u64 flags);
-void free_sym_list(t_sym_list **sym_list, u16 n_sym);
+void applies_flags_sym_list(t_sym_list **sym_list, const u16 n_sym, const u64 flags);
+
+void ascii_sort(t_sym_list **sym_list, const u16 n_sym);
+
+void free_sym_list(t_sym_list **sym_list, const u16 n_sym);
 void swap_sym(t_sym_list **a, t_sym_list **b);
 
 #endif
