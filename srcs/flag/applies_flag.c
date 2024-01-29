@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   applies_flag.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jucheval <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: xel <xel@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 14:27:24 by jucheval          #+#    #+#             */
-/*   Updated: 2024/01/27 01:16:59 by jucheval         ###   ########.fr       */
+/*   Updated: 2024/01/29 08:18:45 by xel              ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "nm.h"
 #include "flag.h"
@@ -54,6 +54,7 @@ unmask_absolute_value_sym(t_sym_list **sym_list, u16 num_symbols) {
 void
 reverse_sort_sym(t_sym_list **sym_list, u16 num_symbols) {
     
-    (void)sym_list;
-    (void)num_symbols;
+    for (u16 i = 0, j = num_symbols - 2; i < j; i++, j--) {
+        swap_sym(&sym_list[i], &sym_list[j]);
+    }
 }
